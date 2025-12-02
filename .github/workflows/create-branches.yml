@@ -1,0 +1,31 @@
+name: Create Experiment Branches
+
+on:
+  workflow_dispatch:
+
+jobs:
+  create-branches:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Create and push experiment branches
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Create experiment branches if they don't exist
+          for i in 1 2 3 4; do
+            branch_name="experiment-$i"
+            if ! git ls-remote --heads origin "$branch_name" | grep -q "$branch_name"; then
+              echo "Creating branch $branch_name"
+              git checkout -b "$branch_name"
+              git push origin "$branch_name"
+              git checkout -
+            else
+              echo "Branch $branch_name already exists"
+            fi
+          done
