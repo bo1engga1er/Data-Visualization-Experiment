@@ -9,6 +9,9 @@ echo "================================================"
 # Array of branch names
 branches=("experiment-1" "experiment-2" "experiment-3" "experiment-4")
 
+# Get the current branch to return to later
+original_branch=$(git branch --show-current)
+
 # Fetch latest from remote
 echo "→ 获取远程分支信息 (Fetching remote branches)..."
 git fetch origin
@@ -24,7 +27,7 @@ for branch in "${branches[@]}"; do
         else
             echo "  → 检出远程分支 $branch (Checking out remote branch $branch)"
             git checkout -b "$branch" "origin/$branch"
-            git checkout -
+            git checkout "$original_branch"
         fi
     else
         # Branch doesn't exist on remote
@@ -35,7 +38,7 @@ for branch in "${branches[@]}"; do
             echo "→ 创建并推送分支 $branch (Creating and pushing branch $branch)"
             git checkout -b "$branch"
             git push -u origin "$branch"
-            git checkout -
+            git checkout "$original_branch"
         fi
     fi
 done

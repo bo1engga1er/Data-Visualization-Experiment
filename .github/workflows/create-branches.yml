@@ -20,6 +20,9 @@ jobs:
           # Fetch all branches
           git fetch --all
           
+          # Get default branch name
+          default_branch=$(git remote show origin | grep 'HEAD branch' | cut -d' ' -f5)
+          
           # Create experiment branches if they don't exist on remote
           for i in 1 2 3 4; do
             branch_name="experiment-$i"
@@ -47,7 +50,7 @@ EOF
                 git add EXPERIMENT.md
                 git commit -m "Initialize $branch_name branch"
                 git push origin "$branch_name"
-                git checkout -
+                git checkout "$default_branch"
               fi
             fi
           done
