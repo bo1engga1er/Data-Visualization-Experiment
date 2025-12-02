@@ -17,15 +17,39 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Create experiment branches if they don't exist
+          # Fetch all branches
+          git fetch --all
+          
+          # Create experiment branches if they don't exist on remote
           for i in 1 2 3 4; do
             branch_name="experiment-$i"
-            if ! git ls-remote --heads origin "$branch_name" | grep -q "$branch_name"; then
-              echo "Creating branch $branch_name"
-              git checkout -b "$branch_name"
-              git push origin "$branch_name"
-              git checkout -
+            if git ls-remote --heads origin "$branch_name" | grep -q "$branch_name"; then
+              echo "✓ Branch $branch_name already exists on remote"
             else
-              echo "Branch $branch_name already exists"
+              # Check if branch exists locally
+              if git show-ref --verify --quiet "refs/heads/$branch_name"; then
+                echo "→ Pushing existing local branch $branch_name"
+                git push origin "$branch_name"
+              else
+                echo "→ Creating and pushing new branch $branch_name"
+                git checkout -b "$branch_name"
+                
+                # Create initial EXPERIMENT.md file
+                cat > EXPERIMENT.md << EOF
+# 实验${i} (Experiment ${i})
+
+本分支用于第${i}次数据可视化实验。
+
+## 说明
+请在本分支进行实验${i}相关的开发工作。
+EOF
+                
+                git add EXPERIMENT.md
+                git commit -m "Initialize $branch_name branch"
+                git push origin "$branch_name"
+                git checkout -
+              fi
             fi
           done
+          
+          echo "✓ All experiment branches processed successfully"

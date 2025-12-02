@@ -1,33 +1,42 @@
 #!/bin/bash
 
-# Script to create four experiment branches for Data Visualization experiments
-# 为数据可视化实验创建四个实验分支的脚本
+# Script to create and push four experiment branches for Data Visualization experiments
+# 为数据可视化实验创建并推送四个实验分支的脚本
 
-echo "创建实验分支 (Creating experiment branches)..."
+echo "创建并推送实验分支 (Creating and pushing experiment branches)..."
 echo "================================================"
 
 # Array of branch names
 branches=("experiment-1" "experiment-2" "experiment-3" "experiment-4")
 
-# Get current branch
-current_branch=$(git branch --show-current)
+# Fetch latest from remote
+echo "→ 获取远程分支信息 (Fetching remote branches)..."
+git fetch origin
 
 for branch in "${branches[@]}"; do
-    # Check if branch already exists locally
-    if git show-ref --verify --quiet "refs/heads/$branch"; then
-        echo "✓ 分支 $branch 已存在 (Branch $branch already exists locally)"
-    else
-        echo "→ 创建分支 $branch (Creating branch $branch)"
-        git checkout -b "$branch"
-        git checkout "$current_branch"
-    fi
-    
     # Check if branch exists on remote
     if git ls-remote --heads origin "$branch" | grep -q "$branch"; then
         echo "✓ 远程分支 $branch 已存在 (Remote branch $branch already exists)"
+        
+        # Check if local branch exists
+        if git show-ref --verify --quiet "refs/heads/$branch"; then
+            echo "  本地分支 $branch 已存在 (Local branch $branch exists)"
+        else
+            echo "  → 检出远程分支 $branch (Checking out remote branch $branch)"
+            git checkout -b "$branch" "origin/$branch"
+            git checkout -
+        fi
     else
-        echo "→ 推送分支 $branch 到远程 (Pushing branch $branch to remote)"
-        git push origin "$branch"
+        # Branch doesn't exist on remote
+        if git show-ref --verify --quiet "refs/heads/$branch"; then
+            echo "→ 推送本地分支 $branch 到远程 (Pushing local branch $branch to remote)"
+            git push -u origin "$branch"
+        else
+            echo "→ 创建并推送分支 $branch (Creating and pushing branch $branch)"
+            git checkout -b "$branch"
+            git push -u origin "$branch"
+            git checkout -
+        fi
     fi
 done
 
