@@ -12,13 +12,16 @@
 
 ### 初始化设置 (Initial Setup)
 
-如果实验分支尚未创建，运行以下脚本来创建所有分支：
+实验分支已在本地创建。要推送到远程仓库，请使用：
 
 ```bash
-./setup-branches.sh
+# 推送所有实验分支
+./push-branches.sh
 ```
 
 或者使用 GitHub Actions 工作流（在 Actions 标签页中手动触发 "Create Experiment Branches" 工作流）。
+
+详细的设置说明请参见 [SETUP_INSTRUCTIONS.md](SETUP_INSTRUCTIONS.md)。
 
 ### 使用说明 (Usage Instructions)
 
